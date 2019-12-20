@@ -20,8 +20,12 @@
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  Rectangle.prototype.getArea = function f() {
+    return this.width * this.height;
+  };
 }
 
 
@@ -35,8 +39,8 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
 
 
@@ -51,8 +55,20 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  return JSON.parse(json, (k, v) => {
+    if (k === '') {
+      const arr = [];
+
+      Object.keys(v).forEach((property) => {
+        if (Object.prototype.hasOwnProperty.call(v, property)) {
+          arr.push(v[property]);
+        }
+      });
+
+      return new proto.constructor(...arr);
+    } return v;
+  });
 }
 
 
@@ -111,32 +127,169 @@ function fromJSON(/* proto, json */) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  str: '',
+
+  element(v) {
+    const MySuperBaseElementSelector = function f(value) {
+      MySuperBaseElementSelector.prototype = cssSelectorBuilder;
+      cssSelectorBuilder.str += value;
+      this.val = cssSelectorBuilder.str;
+
+      this.element = function g() {
+        throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+      };
+
+      this.id = this.constructor.prototype.id;
+      this.class = this.constructor.prototype.class;
+      this.attr = this.constructor.prototype.attr;
+      this.pseudoClass = this.constructor.prototype.pseudoClass;
+      this.pseudoElement = this.constructor.prototype.pseudoElement;
+      this.stringify = this.constructor.prototype.stringify;
+    };
+
+    return new MySuperBaseElementSelector(v);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(v) {
+    const MySuperBaseIdSelector = function f(value) {
+      MySuperBaseIdSelector.prototype = cssSelectorBuilder;
+      cssSelectorBuilder.str += `#${value}`;
+      this.val = cssSelectorBuilder.str;
+
+      this.element = function g() {
+        throw new Error('Selector parts should be arranged in the following order: element, id, class, '
+              + 'attribute, pseudo-class, pseudo-element');
+      };
+
+      this.id = function h() {
+        throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+      };
+
+      this.class = this.constructor.prototype.class;
+      this.attr = this.constructor.prototype.attr;
+      this.pseudoClass = this.constructor.prototype.pseudoClass;
+      this.pseudoElement = this.constructor.prototype.pseudoElement;
+      this.stringify = this.constructor.prototype.stringify;
+    };
+
+    return new MySuperBaseIdSelector(v);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(v) {
+    const MySuperBaseClassSelector = function f(value) {
+      MySuperBaseClassSelector.prototype = cssSelectorBuilder;
+      cssSelectorBuilder.str += `.${value}`;
+      this.val = cssSelectorBuilder.str;
+
+      this.element = function g() {
+        throw new Error('Selector parts should be arranged in the following order: element, id, class, '
+          + 'attribute, pseudo-class, pseudo-element');
+      };
+
+      this.id = this.element;
+      this.class = this.constructor.prototype.class;
+      this.attr = this.constructor.prototype.attr;
+      this.pseudoClass = this.constructor.prototype.pseudoClass;
+      this.pseudoElement = this.constructor.prototype.pseudoElement;
+      this.stringify = this.constructor.prototype.stringify;
+    };
+
+    return new MySuperBaseClassSelector(v);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(v) {
+    const MySuperBaseAttrSelector = function f(value) {
+      MySuperBaseAttrSelector.prototype = cssSelectorBuilder;
+      cssSelectorBuilder.str += `[${value}]`;
+      this.val = cssSelectorBuilder.str;
+
+      this.element = function g() {
+        throw new Error('Selector parts should be arranged in the following order: element, id, class, '
+          + 'attribute, pseudo-class, pseudo-element');
+      };
+
+      this.id = this.element;
+      this.class = this.element;
+      this.attr = this.constructor.prototype.attr;
+      this.pseudoClass = this.constructor.prototype.pseudoClass;
+      this.pseudoElement = this.constructor.prototype.pseudoElement;
+      this.stringify = this.constructor.prototype.stringify;
+    };
+
+    return new MySuperBaseAttrSelector(v);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(v) {
+    const MySuperBasePseudoClassSelector = function f(value) {
+      MySuperBasePseudoClassSelector.prototype = cssSelectorBuilder;
+      cssSelectorBuilder.str += `:${value}`;
+      this.val = cssSelectorBuilder.str;
+
+      this.element = function g() {
+        throw new Error('Selector parts should be arranged in the following order: element, id, class, '
+          + 'attribute, pseudo-class, pseudo-element');
+      };
+
+      this.id = this.element;
+      this.class = this.element;
+      this.attr = this.element;
+      this.pseudoClass = this.constructor.prototype.pseudoClass;
+      this.pseudoElement = this.constructor.prototype.pseudoElement;
+      this.stringify = this.constructor.prototype.stringify;
+    };
+
+    return new MySuperBasePseudoClassSelector(v);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(v) {
+    const MySuperBasePseudoElementSelector = function f(value) {
+      MySuperBasePseudoElementSelector.prototype = cssSelectorBuilder;
+      cssSelectorBuilder.str += `::${value}`;
+      this.val = cssSelectorBuilder.str;
+
+      this.element = function g() {
+        throw new Error('Selector parts should be arranged in the following order: element, id, class, '
+          + 'attribute, pseudo-class, pseudo-element');
+      };
+
+      this.id = this.element;
+      this.class = this.element;
+      this.attr = this.element;
+      this.pseudoClass = this.element;
+
+      this.pseudoElement = function h() {
+        throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+      };
+
+      this.stringify = this.constructor.prototype.stringify;
+    };
+
+    return new MySuperBasePseudoElementSelector(v);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(s1, comb, s2) {
+    const MySuperBaseCombineSelector = function f(selector1, combinator, selector2) {
+      const selector1Val = selector1.val;
+      const selector2Val = selector2.val.slice((selector1.val).length);
+
+      this.val = `${selector1Val} ${combinator} ${selector2Val}`;
+      this.stringify = function g() {
+        cssSelectorBuilder.str = '';
+
+        return this.val;
+      };
+    };
+
+    return new MySuperBaseCombineSelector(s1, comb, s2);
+  },
+
+  stringify() {
+    // let value = cssSelectorBuilder.str;
+    // cssSelectorBuilder.str = '';
+    this.val = cssSelectorBuilder.str;
+    cssSelectorBuilder.str = '';
+
+    return this.val;
   },
 };
 
